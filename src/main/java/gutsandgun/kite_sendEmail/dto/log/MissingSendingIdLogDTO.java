@@ -1,6 +1,6 @@
 package gutsandgun.kite_sendEmail.dto.log;
 
-import gutsandgun.kite_sendEmail.dto.sendMsg.SendMsgProceessingDTO;
+import gutsandgun.kite_sendEmail.dto.sendEmail.SendEmailProceessingDTO;
 import lombok.Data;
 
 import java.util.Date;
@@ -16,10 +16,10 @@ public class MissingSendingIdLogDTO {
     Long TXId;
     Long time = new Date().getTime();
 
-    public MissingSendingIdLogDTO(SendMsgProceessingDTO sendMsgProceessingDTO){
-        this.sendingId = sendMsgProceessingDTO.getSendingId();
-        this.brokerId = sendMsgProceessingDTO.getBrokerId();
-        this.TXId = sendMsgProceessingDTO.getTxId();
+    public MissingSendingIdLogDTO(SendEmailProceessingDTO sendEmailProceessingDTO){
+        this.sendingId = sendEmailProceessingDTO.getSendingId();
+        this.brokerId = sendEmailProceessingDTO.getBrokerId();
+        this.TXId = sendEmailProceessingDTO.getTxId();
     }
 
     @Override

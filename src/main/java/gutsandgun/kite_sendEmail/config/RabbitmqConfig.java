@@ -33,82 +33,46 @@ public class RabbitmqConfig {
     @Value("${spring.rabbitmq.virtual-host}")
     private String vhost;
 
+    @Value("${rabbitmq.email.queue1.name}")
+    private String emailQueue1;
 
+    @Value("${rabbitmq.email.queue2.name}")
+    private String emailQueue2;
 
-    @Value("${rabbitmq.queue1.name}")
-    private String queue1;
+    @Value("${rabbitmq.email.queue1.exchange}")
+    private String emailExchange;
 
-    @Value("${rabbitmq.queue2.name}")
-    private String queue2;
+    @Value("${rabbitmq.email.routing.key.queue1}")
+    private String emailRoutingKey1;
 
-    @Value("${rabbitmq.queue3.name}")
-    private String queue3;
-
-
-    @Value("${rabbitmq.queue1.exchange}")
-    private String exchange1;
-
-    @Value("${rabbitmq.queue2.exchange}")
-    private String exchange2;
-
-    @Value("${rabbitmq.queue3.exchange}")
-    private String exchange3;
-
-
-    @Value("${rabbitmq.routing.key.queue1}")
-    private String routingKey1;
-
-    @Value("${rabbitmq.routing.key.queue2}")
-    private String routingKey2;
-
-    @Value("${rabbitmq.routing.key.queue3}")
-    private String routingKey3;
+    @Value("${rabbitmq.email.routing.key.queue2}")
+    private String emailRoutingKey2;
 
 
     @Bean
-    Queue queue1() {
-        return new Queue(queue1, true);
-    }
-    @Bean
-    Queue queue2() {
-        return new Queue(queue2, true);
-    }
-    @Bean
-    Queue queue3() {
-        return new Queue(queue3, true);
-    }
-
-
-    @Bean
-    DirectExchange directExchange1() {
-        return new DirectExchange(exchange1);
+    Queue emailQueue1() {
+        return new Queue(emailQueue1, true);
     }
 
     @Bean
-    DirectExchange directExchange2() {
-        return new DirectExchange(exchange2);
+    Queue emailQueue2() {
+        return new Queue(emailQueue2, true);
+    }
+
+    DirectExchange emailDirectExchange1() {
+        return new DirectExchange(emailExchange);
     }
 
     @Bean
-    DirectExchange directExchange3() {
-        return new DirectExchange(exchange3);
-    }
-
-
-    @Bean
-    Binding binding1() {
-        return BindingBuilder.bind(queue1()).to(directExchange1()).with(routingKey1);
+    Binding emailBinding1() {
+        return BindingBuilder.bind(emailQueue1()).to(emailDirectExchange1()).with(emailRoutingKey1);
     }
 
     @Bean
-    Binding binding2() {
-        return BindingBuilder.bind(queue2()).to(directExchange2()).with(routingKey2);
+    Binding emailBinding2() {
+        return BindingBuilder.bind(emailQueue2()).to(emailDirectExchange1()).with(emailRoutingKey2);
     }
 
-    @Bean
-    Binding binding3() {
-        return BindingBuilder.bind(queue3()).to(directExchange3()).with(routingKey3);
-    }
 
     @Bean
     MessageConverter messageConverter() {

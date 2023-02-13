@@ -1,4 +1,4 @@
-package gutsandgun.kite_sendEmail.dto.sendMsg;
+package gutsandgun.kite_sendEmail.dto.sendEmail;
 
 import lombok.*;
 
@@ -8,7 +8,8 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @Setter
-public class SendManagerMsgDTO {
+//msg랑 같음
+public class SendManagerEmailDTO {
     private Long id;
     private Long sendingId;
     private String sender;

@@ -1,4 +1,4 @@
-package gutsandgun.kite_sendEmail.dto.sendMsg;
+package gutsandgun.kite_sendEmail.dto.sendEmail;
 
 import gutsandgun.kite_sendEmail.dto.SendingDto;
 import lombok.*;
@@ -8,16 +8,16 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter
-public class BrokerMsgDTO {
+public class BrokerEmailDTO {
     private String sender;
     private String receiver;
     private String title;
     private String content;
     private String mediaLink;
 
-    public BrokerMsgDTO(String content,SendingDto sendingDto, SendManagerMsgDTO sendManagerMsgDTO){
-        this.sender = sendManagerMsgDTO.getSender();
-        this.receiver = sendManagerMsgDTO.getReceiver();
+    public BrokerEmailDTO(String content, SendingDto sendingDto, SendManagerEmailDTO sendManagerEmailDTO){
+        this.sender = sendManagerEmailDTO.getSender();
+        this.receiver = sendManagerEmailDTO.getReceiver();
         this.title = sendingDto.getTitle();
         //CONTENT는 문자열 치환후!
         this.content = content;

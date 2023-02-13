@@ -1,8 +1,8 @@
 package gutsandgun.kite_sendEmail.consumer;
 
 
-import gutsandgun.kite_sendEmail.dto.sendMsg.SendManagerMsgDTO;
-import gutsandgun.kite_sendEmail.dto.sendMsg.SendMsgProceessingDTO;
+import gutsandgun.kite_sendEmail.dto.sendEmail.SendManagerEmailDTO;
+import gutsandgun.kite_sendEmail.dto.sendEmail.SendEmailProceessingDTO;
 import gutsandgun.kite_sendEmail.service.SendingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,50 +19,37 @@ public class Consumer {
     private SendingService sendingService;
 
     // SKT
-    @RabbitListener(queues = "${rabbitmq.routing.key.queue1}")
-    public void consumeSKT(SendManagerMsgDTO sendManagerMsgDTO){
-        Long brokerId = 1L;
+    @RabbitListener(queues = "${rabbitmq.email.queue1.name}")
+    public void consumeEmail1(SendManagerEmailDTO sendManagerEmailDTO){
+        Long brokerId = 4L;
         log.info("============================");
         //1.rabbitmq consumer - sendManager msg
-        log.info("1. SKT message: {}",sendManagerMsgDTO);
+        log.info("1. Email1 message: {}", sendManagerEmailDTO);
         log.info("-----------------------------");
 
-        SendMsgProceessingDTO sendMsgProceessingDTO = new SendMsgProceessingDTO(brokerId,sendManagerMsgDTO);
-        sendingService.sendMsgProcessing(brokerId,sendMsgProceessingDTO);
+        SendEmailProceessingDTO sendEmailProceessingDTO = new SendEmailProceessingDTO(brokerId, sendManagerEmailDTO);
+        sendingService.sendMsgProcessing(sendEmailProceessingDTO);
 
         log.info("============================");
 
     }
 
     // KT
-    @RabbitListener(queues = "${rabbitmq.routing.key.queue2}")
-    public void consumeKT(SendManagerMsgDTO sendManagerMsgDTO){
-        Long brokerId = 2L;
+    @RabbitListener(queues = "${rabbitmq.email.queue2.name}")
+    public void consumeEmail2(SendManagerEmailDTO sendManagerEmailDTO){
+        Long brokerId = 5L;
         log.info("============================");
         //1.rabbitmq consumer - sendManager msg
-        log.info("1/ KT message: {}",sendManagerMsgDTO);
+        log.info("1. Email2: {}", sendManagerEmailDTO);
         log.info("-----------------------------");
 
-        SendMsgProceessingDTO sendMsgProceessingDTO = new SendMsgProceessingDTO(brokerId,sendManagerMsgDTO);
-        sendingService.sendMsgProcessing(brokerId,sendMsgProceessingDTO);
+        SendEmailProceessingDTO sendEmailProceessingDTO = new SendEmailProceessingDTO(brokerId, sendManagerEmailDTO);
+        sendingService.sendMsgProcessing(sendEmailProceessingDTO);
 
         log.info("============================");
 
     }
 
-    // LG
-    @RabbitListener(queues = "${rabbitmq.routing.key.queue3}")
-    public void consumeLG(SendManagerMsgDTO sendManagerMsgDTO){
-        Long brokerId = 3L;
-        log.info("============================");
-        //1.rabbitmq consumer - sendManager msg
-        log.info("1. LG message: {}",sendManagerMsgDTO);
-        log.info("-----------------------------");
 
-        SendMsgProceessingDTO sendMsgProceessingDTO = new SendMsgProceessingDTO(brokerId,sendManagerMsgDTO);
-        sendingService.sendMsgProcessing(brokerId,sendMsgProceessingDTO);
-
-        log.info("============================");
-    }
 
 }

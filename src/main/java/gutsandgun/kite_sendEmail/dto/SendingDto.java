@@ -38,6 +38,4 @@ public class SendingDto  {
         this.content = sending.getContent();
     }
 
-
-
 }

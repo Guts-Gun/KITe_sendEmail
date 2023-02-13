@@ -1,6 +1,6 @@
 package gutsandgun.kite_sendEmail.dto.log;
 
-import gutsandgun.kite_sendEmail.dto.sendMsg.SendMsgProceessingDTO;
+import gutsandgun.kite_sendEmail.dto.sendEmail.SendEmailProceessingDTO;
 import gutsandgun.kite_sendEmail.type.FailReason;
 import gutsandgun.kite_sendEmail.type.SendingStatus;
 import gutsandgun.kite_sendEmail.type.SendingType;
@@ -24,13 +24,13 @@ public class BrokerResponseLogDTO {
     Long time = new Date().getTime();
 
     //객체 용
-    public BrokerResponseLogDTO( Long brokerId, SendingStatus success, SendMsgProceessingDTO sendMsgProceessingDTO){
+    public BrokerResponseLogDTO( Long brokerId, SendingStatus success, SendEmailProceessingDTO sendEmailProceessingDTO){
         this.success = success;
         this.brokerId = brokerId;
 
-        this.sendingId = sendMsgProceessingDTO.getSendingId();
-        this.sendingType = sendMsgProceessingDTO.getSendingType();
-        this.TXId = sendMsgProceessingDTO.getTxId();
+        this.sendingId = sendEmailProceessingDTO.getSendingId();
+        this.sendingType = sendEmailProceessingDTO.getSendingType();
+        this.TXId = sendEmailProceessingDTO.getTxId();
     }
 
     public void setFailReason(FailReason failReason) {

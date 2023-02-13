@@ -53,21 +53,18 @@ spring:
             descriptor:
               sql: trace  # query의 ?에 어떤 값이 들어가는지 TRACE Log에 값을 보여줌
 rabbitmq:
-  queue1:
-    name: SKT
-    exchange: SKT-exchange
-  queue2:
-    name: KT
-    exchange: KT-exchange
-  queue3:
-    name: LG
-    exchange: LG-exchange
-  routing:
-    key:
-      queue1: SKT
-      queue2: KT
-      queue3: LG
+  email:
+    queue1:
+      name: emailbroker1
+      exchange: email-exchange
+    queue2:
+      name: emailbroker2
+      exchange: email-exchange
+    routing:
+      key:
+        queue1: broker1
+        queue2: broker2
+
 feign:
   url :
     broker-dummy : localhost:8081
-    sending : localhost:8004
