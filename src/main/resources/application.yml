@@ -67,4 +67,4 @@ rabbitmq:
 
 feign:
   url :
-    broker-dummy : localhost:8081
+    broker-dummy : gutsandgun.kro.kr:30000
