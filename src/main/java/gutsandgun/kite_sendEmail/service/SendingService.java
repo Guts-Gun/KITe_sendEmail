@@ -49,7 +49,7 @@ public class SendingService {
     @Autowired
     private EmailFeignClient emailFeignClient;
 
-    public void sendMsgProcessing(SendEmailProceessingDTO sendEmailProceessingDTO){
+    public void sendEmailProcessing(SendEmailProceessingDTO sendEmailProceessingDTO){
         try{
             //2.sending 정보 얻기
             sendEmailProceessingDTO.setSendingDto(getSendingToDto(sendEmailProceessingDTO.getSendingId()));

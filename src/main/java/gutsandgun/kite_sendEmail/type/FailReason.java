@@ -14,7 +14,7 @@ public enum FailReason {
 	 */
 	USER,
 
-	//Service : sendMsg (broker랑 통신하는 곳)
+	//Service : sendEmail (broker랑 통신하는 곳)
 
 	/**
 	 * broker error : broker 이상
