@@ -67,4 +67,6 @@ rabbitmq:
 
 feign:
   url :
-    broker-dummy : gutsandgun.kro.kr:30000
+     broker-dummy4 : https://gutsandgun.kro.kr:45003
+     broker-dummy5 : https://gutsandgun.kro.kr:45004
+#    broker-dummy: gutsandgun.kro.kr:8081

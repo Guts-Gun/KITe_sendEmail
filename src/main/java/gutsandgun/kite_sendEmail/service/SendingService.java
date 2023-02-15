@@ -5,13 +5,15 @@ import gutsandgun.kite_sendEmail.dto.*;
 import gutsandgun.kite_sendEmail.dto.log.BrokerRequestLogDTO;
 import gutsandgun.kite_sendEmail.dto.log.BrokerResponseLogDTO;
 import gutsandgun.kite_sendEmail.dto.log.MissingSendingIdLogDTO;
+import gutsandgun.kite_sendEmail.dto.sendEmail.BrokerEmailDTO;
 import gutsandgun.kite_sendEmail.dto.sendEmail.SendEmailProceessingDTO;
 import gutsandgun.kite_sendEmail.entity.read.Broker;
 import gutsandgun.kite_sendEmail.entity.read.Sending;
 import gutsandgun.kite_sendEmail.exception.ConsumerException;
 import gutsandgun.kite_sendEmail.exception.CustomException;
 import gutsandgun.kite_sendEmail.exception.ErrorCode;
-import gutsandgun.kite_sendEmail.feignClients.EmailFeignClient;
+import gutsandgun.kite_sendEmail.feignClients.EmailBroker1FeignClient;
+import gutsandgun.kite_sendEmail.feignClients.EmailBroker2FeignClient;
 import gutsandgun.kite_sendEmail.repository.read.ReadBrokerRepository;
 import gutsandgun.kite_sendEmail.repository.read.ReadSendingRepository;
 import gutsandgun.kite_sendEmail.type.FailReason;
@@ -47,8 +49,9 @@ public class SendingService {
 
     //api
     @Autowired
-    private EmailFeignClient emailFeignClient;
-
+    private EmailBroker1FeignClient emailBroker1FeignClient;
+    @Autowired
+    private EmailBroker2FeignClient emailBroker2FeignClient;
     public void sendEmailProcessing(SendEmailProceessingDTO sendEmailProceessingDTO){
         try{
             //2.sending 정보 얻기
@@ -108,7 +111,7 @@ public class SendingService {
                 log.info("4. Send broker: {}", sendEmailProceessingDTO.getBrokerEmailDTO());
                 BrokerRequestLogDTO brokerRequestLogDTO = new BrokerRequestLogDTO(sendEmailProceessingDTO.getBrokerId(), sendEmailProceessingDTO);
                 log.info("broker[초기발송] request log: "+ brokerRequestLogDTO.toString());
-                ResponseEntity<Long> response = emailFeignClient.sendEmail(emailBroker.get(sendEmailProceessingDTO.getBrokerId()), sendEmailProceessingDTO.getBrokerEmailDTO());
+                ResponseEntity<Long> response = sendBrokerApi(sendEmailProceessingDTO.getBrokerId(), sendEmailProceessingDTO.getBrokerEmailDTO());
             }
             catch (CustomException e){
                 log.info("*******************************************");
@@ -155,7 +158,7 @@ public class SendingService {
                         log.info("대체발송 중계사: {}번-{}", b.getId(),emailBroker.get(b.getId()));
                         BrokerRequestLogDTO brokerRequestLogDTO = new BrokerRequestLogDTO(b.getId(), sendEmailProceessingDTO);
                         log.info("broker[대체발송] request: "+ brokerRequestLogDTO.toString());
-                        ResponseEntity<Long> response = emailFeignClient.sendEmail(emailBroker.get(b.getId()), sendEmailProceessingDTO.getBrokerEmailDTO());
+                        ResponseEntity<Long> response = sendBrokerApi(sendEmailProceessingDTO.getBrokerId(), sendEmailProceessingDTO.getBrokerEmailDTO());
                     }
                     catch (CustomException e){
                         System.out.println(e);
@@ -183,8 +186,17 @@ public class SendingService {
                 }
             }
         }
+            private ResponseEntity<Long> sendBrokerApi(Long brokerId, BrokerEmailDTO brokerEmailDTO){
+                ResponseEntity<Long> responseEntity = null;
+                if (brokerId == 4L) {
+                    responseEntity=emailBroker1FeignClient.sendEmail(emailBroker.get(brokerId),brokerEmailDTO);
+                } else if (brokerId == 5L) {
+                    responseEntity=emailBroker2FeignClient.sendEmail(emailBroker.get(brokerId),brokerEmailDTO);
+                }
+                return responseEntity;
+            }
 
-            public List<BrokerDTO> getEmailBrokerList(){
+            private List<BrokerDTO> getEmailBrokerList(){
                 List<Broker> BrokerList = readBrokerRepository.findBySendingType(SendingType.EMAIL);
                 List<BrokerDTO> brokerDTOList = new ArrayList<>();
                 BrokerList.forEach(broker -> {
