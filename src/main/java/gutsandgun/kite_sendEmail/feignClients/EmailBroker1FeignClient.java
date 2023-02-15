@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "emailFeignClient", url = "${feign.url.broker-dummy4}", configuration = FeignBrokerConfig.class)
+@FeignClient(name = "emailFeignClient", url = "${feign.url.broker-dummy4}", contextId = "broker4" ,configuration = FeignBrokerConfig.class)
 public interface EmailBroker1FeignClient {
 	@PostMapping("/broker/all/{brokerName}/send/sms")
 	ResponseEntity<Long> sendEmail(@PathVariable("brokerName") String name, @RequestBody BrokerEmailDTO brokerEmailDTO);
