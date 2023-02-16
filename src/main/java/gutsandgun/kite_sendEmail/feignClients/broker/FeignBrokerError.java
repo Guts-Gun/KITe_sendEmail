@@ -39,7 +39,11 @@ public class FeignBrokerError implements ErrorDecoder {
                         return new CustomException(c);
                     }
                 }
+                default :
+                    log.info("뭔가 오류가 나는중");
+                    log.info(String.valueOf(response.status()));
+                    log.info(String.valueOf(response));
+                    return new CustomException(ErrorCode.BAD_REQUEST);
         }
-        return null;
     }
 }
