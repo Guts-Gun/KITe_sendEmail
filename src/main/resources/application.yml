@@ -12,13 +12,10 @@ spring:
     #    password: solbitest1212!
     virtual-host: gutsandgun
   redis:
-    lettuce:
-      pool:
-        max-active: 10
-        max-idle: 10
-        min-idle: 2
-    port: 6379
-    host: 127.0.0.1
+    cluster:
+      nodes: redis-cluster.redis.svc.cluster.local:6379
+#    port: 6379
+#    host: 127.0.0.1
     #    port: 16379
     #    host: gutsandgun.kro.kr
     password:
