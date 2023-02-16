@@ -47,7 +47,8 @@ public class BrokerResponseLogDTO {
                 ", sendingType=" + sendingType +
                 ", brokerId=" + brokerId +
                 ", TXId=" + TXId +
-                ", time=" + time;
+                ", time=" + time+
+                "@";
     }
 
 

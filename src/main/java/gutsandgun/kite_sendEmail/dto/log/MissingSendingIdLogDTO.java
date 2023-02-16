@@ -29,6 +29,7 @@ public class MissingSendingIdLogDTO {
                 ", sendingId=" + sendingId +
                 ", brokerId=" + brokerId +
                 ", TXId=" + TXId +
-                ", time=" + time;
+                ", time=" + time+
+                "@";
     }
 }

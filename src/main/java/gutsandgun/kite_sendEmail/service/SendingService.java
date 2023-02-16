@@ -81,7 +81,7 @@ public class SendingService {
             if(e.getMessage().equals(ConsumerException.ERROR_DB)) {
                 log.info("ERROR : sending 정보 DB 에 없음");
                 MissingSendingIdLogDTO missingSendingIdLogDTO = new MissingSendingIdLogDTO(sendEmailProceessingDTO);
-                log.info("log: " + missingSendingIdLogDTO.toString());
+                System.out.println("log: " + missingSendingIdLogDTO.toString());
             }
             log.info("*******************************************");
         }
@@ -110,12 +110,12 @@ public class SendingService {
             try {
                 log.info("4. Send broker: {}", sendEmailProceessingDTO.getBrokerEmailDTO());
                 BrokerRequestLogDTO brokerRequestLogDTO = new BrokerRequestLogDTO(sendEmailProceessingDTO.getBrokerId(), sendEmailProceessingDTO);
-                log.info("broker[초기발송] request log: "+ brokerRequestLogDTO.toString());
+                System.out.println("broker[초기발송] request log: "+ brokerRequestLogDTO.toString());
                 ResponseEntity<Long> response = sendBrokerApi(sendEmailProceessingDTO.getBrokerId(), sendEmailProceessingDTO.getBrokerEmailDTO());
             }
             catch (CustomException e){
                 log.info("*******************************************");
-                System.out.println("ERROR : BROKER - " + e.getErrorCode());
+                log.info("ERROR : BROKER - " + e.getErrorCode());
                 brokerResponseLogDTO = new BrokerResponseLogDTO(sendEmailProceessingDTO.getBrokerId(), SendingStatus.FAIL, sendEmailProceessingDTO);
                 if(e.getErrorCode() == ErrorCode.BAD_REQUEST){
                     //1. 브로커 오류
@@ -124,13 +124,13 @@ public class SendingService {
                 else{
                     //other오류도 처리해야하는지?
                 }
-                log.info("broker[초기발송] response log: "+ brokerResponseLogDTO.toString());
+                System.out.println("broker[초기발송] response log: "+ brokerResponseLogDTO.toString());
                 log.info("*******************************************");
             }
             finally {
                 if(brokerResponseLogDTO==null){
                     brokerResponseLogDTO = new BrokerResponseLogDTO(sendEmailProceessingDTO.getBrokerId(), SendingStatus.COMPLETE, sendEmailProceessingDTO);
-                    log.info("broker[초기발송] response log: "+brokerResponseLogDTO.toString());
+                    System.out.println("broker[초기발송] response log: "+brokerResponseLogDTO.toString());
                 }
             }
             log.info("-----------------------------");
@@ -157,7 +157,7 @@ public class SendingService {
                     try{
                         log.info("대체발송 중계사: {}번-{}", b.getId(),emailBroker.get(b.getId()));
                         BrokerRequestLogDTO brokerRequestLogDTO = new BrokerRequestLogDTO(b.getId(), sendEmailProceessingDTO);
-                        log.info("broker[대체발송] request: "+ brokerRequestLogDTO.toString());
+                        System.out.println("broker[대체발송] request: "+ brokerRequestLogDTO.toString());
                         ResponseEntity<Long> response = sendBrokerApi(sendEmailProceessingDTO.getBrokerId(), sendEmailProceessingDTO.getBrokerEmailDTO());
                     }
                     catch (CustomException e){
@@ -169,14 +169,14 @@ public class SendingService {
                         if(e.getErrorCode() == ErrorCode.BAD_REQUEST){
                             brokerResponseLogDTO.setFailReason(FailReason.BAD_REQUEST);
                         }
-                        log.info("broker[대체발송] response log: "+ brokerResponseLogDTO.toString());
+                        System.out.println("broker[대체발송] response log: "+ brokerResponseLogDTO.toString());
                         log.info("*******************************************");
                     }
                     finally {
                         if(alternativeBrokerSuccess){
                             brokerResponseList.add(true);
                             BrokerResponseLogDTO brokerResponseLogDTO = new BrokerResponseLogDTO(b.getId(),SendingStatus.COMPLETE, sendEmailProceessingDTO);
-                            log.info("broker[대체발송] response log: "+ brokerResponseLogDTO.toString());
+                            System.out.println("broker[대체발송] response log: "+ brokerResponseLogDTO.toString());
                             break;
                         }
                         else{
