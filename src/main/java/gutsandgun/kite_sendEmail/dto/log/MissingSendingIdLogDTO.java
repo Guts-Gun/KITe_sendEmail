@@ -24,12 +24,12 @@ public class MissingSendingIdLogDTO {
 
     @Override
     public String toString() {
-        return  "Service='" + Service +
-                ", type='" + type +
-                ", sendingId=" + sendingId +
-                ", brokerId=" + brokerId +
-                ", TXId=" + TXId +
-                ", time=" + time+
+        return  "Service: " + Service +
+                ", type: " + type +
+                ", sendingId: " + sendingId +
+                ", brokerId: " + brokerId +
+                ", TXId: " + TXId +
+                ", time: " + time+
                 "@";
     }
 }

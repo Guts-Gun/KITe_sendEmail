@@ -32,13 +32,13 @@ public class BrokerRequestLogDTO {
 
     @Override
     public String toString() {
-        return "Service=" + Service +
-                ", type=" + type +
-                ", sendingId=" + sendingId +
-                ", sendingType=" + sendingType +
-                ", brokerId=" + brokerId +
-                ", TXId=" + TXId +
-                ", time=" + time +
+        return "Service: " + Service +
+                ", type: " + type +
+                ", sendingId: " + sendingId +
+                ", sendingType: " + sendingType +
+                ", brokerId: " + brokerId +
+                ", TXId: " + TXId +
+                ", time: " + time +
                 "@";
     }
 }

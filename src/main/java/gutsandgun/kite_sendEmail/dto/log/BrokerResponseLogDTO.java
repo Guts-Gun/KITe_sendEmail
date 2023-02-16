@@ -39,15 +39,15 @@ public class BrokerResponseLogDTO {
 
     @Override
     public String toString() {
-        return  "Service=" + Service +
-                ", type=" + type +
-                ", success=" + success +
-                ", failReason=" + failReason +
-                ", sendingId=" + sendingId +
-                ", sendingType=" + sendingType +
-                ", brokerId=" + brokerId +
-                ", TXId=" + TXId +
-                ", time=" + time+
+        return  "Service: " + Service +
+                ", type: " + type +
+                ", success: " + success +
+                ", failReason: " + failReason +
+                ", sendingId: " + sendingId +
+                ", sendingType: " + sendingType +
+                ", brokerId: " + brokerId +
+                ", TXId: " + TXId +
+                ", time: " + time+
                 "@";
     }
 
