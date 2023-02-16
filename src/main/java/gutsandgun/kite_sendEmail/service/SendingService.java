@@ -87,13 +87,13 @@ public class SendingService {
         }
     }
 
+    @Cacheable(value="sending" , key = "#sendingId" ,cacheManager = "CacheManager")
     private SendingDto getSendingDto(Long sendingId){
         Sending sending = getSending(sendingId);
         SendingDto sendingDto = new SendingDto(sending);
         return sendingDto;
     }
 
-        @Cacheable(value="sending" , key = "#sendingId" ,cacheManager = "CacheManager")
         public Sending getSending(Long sendingId){
             //with log
 
