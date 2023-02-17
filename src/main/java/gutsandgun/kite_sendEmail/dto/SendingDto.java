@@ -8,12 +8,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
 @ToString
 @NoArgsConstructor
-public class SendingDto  {
+public class SendingDto implements Serializable {
     private Long id;
 
     private String userId;
