@@ -1,5 +1,6 @@
 package gutsandgun.kite_sendEmail.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gutsandgun.kite_sendEmail.dto.*;
 import gutsandgun.kite_sendEmail.dto.log.BrokerRequestLogDTO;
@@ -52,10 +53,13 @@ public class SendingService {
     private EmailBroker1FeignClient emailBroker1FeignClient;
     @Autowired
     private EmailBroker2FeignClient emailBroker2FeignClient;
+
+    ObjectMapper objectMapper = new ObjectMapper();
+
     public void sendEmailProcessing(SendEmailProceessingDTO sendEmailProceessingDTO){
         try{
             //2.sending 정보 얻기
-            sendEmailProceessingDTO.setSendingDto(getSendingDto(sendEmailProceessingDTO.getSendingId()));
+            sendEmailProceessingDTO.setSendingDto(objectMapper.readValue(getSendingDto(sendEmailProceessingDTO.getSendingId()), SendingDto.class));
             log.info("-----------------------------");
             if(!sendEmailProceessingDTO.getSendingType().equals(SendingType.EMAIL)){
                 log.info("@@@@플랫폼 대체 발송@@@@");
@@ -84,14 +88,24 @@ public class SendingService {
                 System.out.println("log: " + missingSendingIdLogDTO.toString());
             }
             log.info("*******************************************");
+        } catch (JsonProcessingException e) {
+            log.info("*******************************************");
+            if(e.getMessage().equals(ConsumerException.ERROR_DB)) {
+                log.info("ERROR : sending 정보 DB 에 없음2 (parsing error)");
+                MissingSendingIdLogDTO missingSendingIdLogDTO = new MissingSendingIdLogDTO(sendEmailProceessingDTO);
+                System.out.println("log: " + missingSendingIdLogDTO.toString());
+            }
+            log.info("*******************************************");
+
         }
     }
 
     @Cacheable(value="sending" , key = "#sendingId" ,cacheManager = "CacheManager")
-    private SendingDto getSendingDto(Long sendingId){
+    public String getSendingDto(Long sendingId) throws JsonProcessingException {
         Sending sending = getSending(sendingId);
         SendingDto sendingDto = new SendingDto(sending);
-        return sendingDto;
+        String sendingDtoStr = objectMapper.writeValueAsString(sendingDto);
+        return sendingDtoStr;
     }
 
         public Sending getSending(Long sendingId){
