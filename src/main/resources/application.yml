@@ -11,10 +11,11 @@ spring:
     #    username: solbitest
     #    password: solbitest1212!
     virtual-host: gutsandgun
-  redis:
-    data:
+  data:
+    redis:
       cluster:
-        nodes: redis-cluster.redis.svc.cluster.local:6379
+        nodes:
+          - redis-cluster.redis.svc.cluster.local:6379
 #    port: 6379
 #    host: 127.0.0.1
     #    port: 16379

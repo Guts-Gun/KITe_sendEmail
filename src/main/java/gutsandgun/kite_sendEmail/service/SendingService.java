@@ -56,10 +56,13 @@ public class SendingService {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
+    @Autowired
+    SendingCache sendingCache;
+
     public void sendEmailProcessing(SendEmailProceessingDTO sendEmailProceessingDTO){
         try{
             //2.sending 정보 얻기
-            sendEmailProceessingDTO.setSendingDto(objectMapper.readValue(getSendingDto(sendEmailProceessingDTO.getSendingId()), SendingDto.class));
+            sendEmailProceessingDTO.setSendingDto(objectMapper.readValue(sendingCache.getSendingDto(sendEmailProceessingDTO.getSendingId()), SendingDto.class));
             log.info("-----------------------------");
             if(!sendEmailProceessingDTO.getSendingType().equals(SendingType.EMAIL)){
                 log.info("@@@@플랫폼 대체 발송@@@@");
@@ -99,30 +102,6 @@ public class SendingService {
 
         }
     }
-
-    @Cacheable(value="sending" , key = "#sendingId" ,cacheManager = "CacheManager")
-    public String getSendingDto(Long sendingId) throws JsonProcessingException {
-        Sending sending = getSending(sendingId);
-        SendingDto sendingDto = new SendingDto(sending);
-        String sendingDtoStr = objectMapper.writeValueAsString(sendingDto);
-        return sendingDtoStr;
-    }
-
-        public Sending getSending(Long sendingId){
-            //with log
-
-            long beforeTime = System.currentTimeMillis();
-
-            Sending sending = readSendingRepository.findById(sendingId).orElseThrow(()-> new ConsumerException(ConsumerException.ERROR_DB));
-            long afterTime = System.currentTimeMillis();
-            long secDiffTime = (afterTime - beforeTime);
-            log.info("2. getSending :{} :",sending.toString());
-            log.info("처리 속도(using cache) : "+secDiffTime);
-
-            return sending;
-        }
-
-
 
 
     public BrokerResponseLogDTO sendBroker(SendEmailProceessingDTO sendEmailProceessingDTO){
