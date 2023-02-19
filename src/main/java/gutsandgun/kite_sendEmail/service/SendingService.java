@@ -15,6 +15,7 @@ import gutsandgun.kite_sendEmail.exception.CustomException;
 import gutsandgun.kite_sendEmail.exception.ErrorCode;
 import gutsandgun.kite_sendEmail.feignClients.EmailBroker1FeignClient;
 import gutsandgun.kite_sendEmail.feignClients.EmailBroker2FeignClient;
+import gutsandgun.kite_sendEmail.publisher.RabbitMQProducer;
 import gutsandgun.kite_sendEmail.repository.read.ReadBrokerRepository;
 import gutsandgun.kite_sendEmail.repository.read.ReadSendingRepository;
 import gutsandgun.kite_sendEmail.type.FailReason;
@@ -58,6 +59,8 @@ public class SendingService {
 
     @Autowired
     SendingCache sendingCache;
+    @Autowired
+    private RabbitMQProducer rabbitMQProducer;
 
     public void sendEmailProcessing(SendEmailProceessingDTO sendEmailProceessingDTO){
         try{
@@ -88,7 +91,7 @@ public class SendingService {
             if(e.getMessage().equals(ConsumerException.ERROR_DB)) {
                 log.info("ERROR : sending 정보 DB 에 없음");
                 MissingSendingIdLogDTO missingSendingIdLogDTO = new MissingSendingIdLogDTO(sendEmailProceessingDTO);
-                System.out.println("log: " + missingSendingIdLogDTO.toString());
+                rabbitMQProducer.logSendQueue("log: " + missingSendingIdLogDTO.toString());
             }
             log.info("*******************************************");
         } catch (JsonProcessingException e) {
@@ -96,7 +99,7 @@ public class SendingService {
             if(e.getMessage().equals(ConsumerException.ERROR_DB)) {
                 log.info("ERROR : sending 정보 DB 에 없음2 (parsing error)");
                 MissingSendingIdLogDTO missingSendingIdLogDTO = new MissingSendingIdLogDTO(sendEmailProceessingDTO);
-                System.out.println("log: " + missingSendingIdLogDTO.toString());
+                rabbitMQProducer.logSendQueue("log: " + missingSendingIdLogDTO.toString());
             }
             log.info("*******************************************");
 
@@ -109,7 +112,7 @@ public class SendingService {
             try {
                 log.info("4. Send broker: {}", sendEmailProceessingDTO.getBrokerEmailDTO());
                 BrokerRequestLogDTO brokerRequestLogDTO = new BrokerRequestLogDTO(sendEmailProceessingDTO.getBrokerId(), sendEmailProceessingDTO);
-                System.out.println("broker[초기발송] request log: "+ brokerRequestLogDTO.toString());
+                rabbitMQProducer.logSendQueue("broker[초기발송] request log: "+ brokerRequestLogDTO.toString());
                 ResponseEntity<Long> response = sendBrokerApi(sendEmailProceessingDTO.getBrokerId(), sendEmailProceessingDTO.getBrokerEmailDTO());
             }
             catch (CustomException e){
@@ -123,13 +126,13 @@ public class SendingService {
                 else{
                     //other오류도 처리해야하는지?
                 }
-                System.out.println("broker[초기발송] response log: "+ brokerResponseLogDTO.toString());
+                rabbitMQProducer.logSendQueue("broker[초기발송] response log: "+ brokerResponseLogDTO.toString());
                 log.info("*******************************************");
             }
             finally {
                 if(brokerResponseLogDTO==null){
                     brokerResponseLogDTO = new BrokerResponseLogDTO(sendEmailProceessingDTO.getBrokerId(), SendingStatus.COMPLETE, sendEmailProceessingDTO);
-                    System.out.println("broker[초기발송] response log: "+brokerResponseLogDTO.toString());
+                    rabbitMQProducer.logSendQueue("broker[초기발송] response log: "+brokerResponseLogDTO.toString());
                 }
             }
             log.info("-----------------------------");
@@ -156,7 +159,7 @@ public class SendingService {
                     try{
                         log.info("대체발송 중계사: {}번-{}", b.getId(),emailBroker.get(b.getId()));
                         BrokerRequestLogDTO brokerRequestLogDTO = new BrokerRequestLogDTO(b.getId(), sendEmailProceessingDTO);
-                        System.out.println("broker[대체발송] request: "+ brokerRequestLogDTO.toString());
+                        rabbitMQProducer.logSendQueue("broker[대체발송] request: "+ brokerRequestLogDTO.toString());
                         ResponseEntity<Long> response = sendBrokerApi(sendEmailProceessingDTO.getBrokerId(), sendEmailProceessingDTO.getBrokerEmailDTO());
                     }
                     catch (CustomException e){
@@ -168,14 +171,14 @@ public class SendingService {
                         if(e.getErrorCode() == ErrorCode.BAD_REQUEST){
                             brokerResponseLogDTO.setFailReason(FailReason.BAD_REQUEST);
                         }
-                        System.out.println("broker[대체발송] response log: "+ brokerResponseLogDTO.toString());
+                        rabbitMQProducer.logSendQueue("broker[대체발송] response log: "+ brokerResponseLogDTO.toString());
                         log.info("*******************************************");
                     }
                     finally {
                         if(alternativeBrokerSuccess){
                             brokerResponseList.add(true);
                             BrokerResponseLogDTO brokerResponseLogDTO = new BrokerResponseLogDTO(b.getId(),SendingStatus.COMPLETE, sendEmailProceessingDTO);
-                            System.out.println("broker[대체발송] response log: "+ brokerResponseLogDTO.toString());
+                            rabbitMQProducer.logSendQueue("broker[대체발송] response log: "+ brokerResponseLogDTO.toString());
                             break;
                         }
                         else{
