@@ -28,7 +28,7 @@ public class Consumer {
         log.info("-----------------------------");
 
         SendEmailProceessingDTO sendEmailProceessingDTO = new SendEmailProceessingDTO(brokerId, sendManagerEmailDTO);
-        sendingService.sendEmailProcessing(sendEmailProceessingDTO);
+        new Thread(()->sendingService.sendEmailProcessing(sendEmailProceessingDTO)).start();
 
         log.info("============================");
 
@@ -44,7 +44,7 @@ public class Consumer {
         log.info("-----------------------------");
 
         SendEmailProceessingDTO sendEmailProceessingDTO = new SendEmailProceessingDTO(brokerId, sendManagerEmailDTO);
-        sendingService.sendEmailProcessing(sendEmailProceessingDTO);
+        new Thread(()->sendingService.sendEmailProcessing(sendEmailProceessingDTO)).start();
 
         log.info("============================");
 
