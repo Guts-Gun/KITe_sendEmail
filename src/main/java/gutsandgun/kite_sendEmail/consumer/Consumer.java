@@ -10,6 +10,9 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 @Component
 public class Consumer {
     private static final Logger log = LoggerFactory.getLogger(Consumer.class);
@@ -17,6 +20,8 @@ public class Consumer {
     //service
     @Autowired
     private SendingService sendingService;
+
+    private final ExecutorService executorService = Executors.newFixedThreadPool(100);
 
     // SKT
     @RabbitListener(queues = "${rabbitmq.email.queue1.name}")
@@ -28,7 +33,7 @@ public class Consumer {
         log.info("-----------------------------");
 
         SendEmailProceessingDTO sendEmailProceessingDTO = new SendEmailProceessingDTO(brokerId, sendManagerEmailDTO);
-        new Thread(()->sendingService.sendEmailProcessing(sendEmailProceessingDTO)).start();
+        executorService.submit(() -> sendingService.sendEmailProcessing(sendEmailProceessingDTO));
 
         log.info("============================");
 
@@ -44,7 +49,7 @@ public class Consumer {
         log.info("-----------------------------");
 
         SendEmailProceessingDTO sendEmailProceessingDTO = new SendEmailProceessingDTO(brokerId, sendManagerEmailDTO);
-        new Thread(()->sendingService.sendEmailProcessing(sendEmailProceessingDTO)).start();
+        executorService.submit(() -> sendingService.sendEmailProcessing(sendEmailProceessingDTO));
 
         log.info("============================");
 
