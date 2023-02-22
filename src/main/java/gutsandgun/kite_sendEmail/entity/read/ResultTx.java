@@ -2,6 +2,7 @@ package gutsandgun.kite_sendEmail.entity.read;
 
 import gutsandgun.kite_sendEmail.entity.BaseTimeEntity;
 import gutsandgun.kite_sendEmail.type.FailReason;
+import gutsandgun.kite_sendEmail.type.SendingStatus;
 import gutsandgun.kite_sendEmail.type.SendingType;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -78,10 +79,11 @@ public class ResultTx extends BaseTimeEntity {
 	private String receiver;
 
 	/**
-	 * 성공 여부
+	 * 전송 상태
 	 */
-	@Comment("성공 여부")
-	private Boolean success;
+	@Comment("전송 상태")
+	@ColumnDefault("1")
+	private SendingStatus status = SendingStatus.PENDING;
 
 	/**
 	 * 실패 원인
