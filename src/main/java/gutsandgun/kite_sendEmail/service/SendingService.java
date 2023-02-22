@@ -154,14 +154,13 @@ public class SendingService {
             log.info("brokerList:{}",brokerDTOList);
             log.info("-----------------------------");
 
-            int brokerSendingCount = 0;
+            int brokerSendingCount = 1;
 
             //대체 발송 처리(sending queue)
             for (BrokerDTO b : brokerDTOList){
                 //최초발송 false처리
                 if(sendEmailProceessingDTO.getBrokerId() == b.getId()){
                     brokerResponseList.add(false);
-                    brokerSendingCount+=1;
                 }
                 else{
                     Boolean alternativeBrokerSuccess = true;
