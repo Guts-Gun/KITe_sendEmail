@@ -38,7 +38,7 @@ public class BrokerResponseLogDTO {
         this.failReason = failReason;
     }
 
-    public void setLast(Boolean bool){
+    public void setLast(Boolean last){
         this.last = last;
     }
 
