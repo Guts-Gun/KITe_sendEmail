@@ -92,6 +92,7 @@ public class SendingService {
                 log.info("ERROR : sending 정보 DB 에 없음");
                 MissingSendingIdLogDTO missingSendingIdLogDTO = new MissingSendingIdLogDTO(sendEmailProceessingDTO);
                 rabbitMQProducer.logSendQueue("log: " + missingSendingIdLogDTO.toString());
+                log.info("log: " + missingSendingIdLogDTO.toString());
             }
             log.info("*******************************************");
         } catch (JsonProcessingException e) {
@@ -100,6 +101,7 @@ public class SendingService {
                 log.info("ERROR : sending 정보 DB 에 없음2 (parsing error)");
                 MissingSendingIdLogDTO missingSendingIdLogDTO = new MissingSendingIdLogDTO(sendEmailProceessingDTO);
                 rabbitMQProducer.logSendQueue("log: " + missingSendingIdLogDTO.toString());
+                log.info("log: " + missingSendingIdLogDTO.toString());
             }
             log.info("*******************************************");
 
@@ -113,6 +115,7 @@ public class SendingService {
                 log.info("4. Send broker: {}", sendEmailProceessingDTO.getBrokerEmailDTO());
                 BrokerRequestLogDTO brokerRequestLogDTO = new BrokerRequestLogDTO(sendEmailProceessingDTO.getBrokerId(), sendEmailProceessingDTO);
                 rabbitMQProducer.logSendQueue("broker[초기발송] request log: "+ brokerRequestLogDTO.toString());
+                log.info("broker[초기발송] request log: "+ brokerRequestLogDTO.toString());
                 ResponseEntity<Long> response = sendBrokerApi(sendEmailProceessingDTO.getBrokerId(), sendEmailProceessingDTO.getBrokerEmailDTO());
             }
             catch (CustomException e){
@@ -127,12 +130,15 @@ public class SendingService {
                     //other오류도 처리해야하는지?
                 }
                 rabbitMQProducer.logSendQueue("broker[초기발송] response log: "+ brokerResponseLogDTO.toString());
+                log.info("broker[초기발송] response log: "+ brokerResponseLogDTO.toString());
                 log.info("*******************************************");
             }
             finally {
                 if(brokerResponseLogDTO==null){
                     brokerResponseLogDTO = new BrokerResponseLogDTO(sendEmailProceessingDTO.getBrokerId(), SendingStatus.COMPLETE, sendEmailProceessingDTO);
+                    brokerResponseLogDTO.setLast(true);
                     rabbitMQProducer.logSendQueue("broker[초기발송] response log: "+brokerResponseLogDTO.toString());
+                    log.info("broker[초기발송] response log: "+ brokerResponseLogDTO.toString());
                 }
             }
             log.info("-----------------------------");
@@ -145,40 +151,51 @@ public class SendingService {
             //broker 정보 가져오기
             List<BrokerDTO> brokerDTOList = getEmailBrokerList();
             ArrayList<Boolean> brokerResponseList = new ArrayList<Boolean>();
-            //log.info("brokerList:{}",brokerDTOList);
-            //log.info("-----------------------------");
+            log.info("brokerList:{}",brokerDTOList);
+            log.info("-----------------------------");
+
+            int brokerSendingCount = 0;
 
             //대체 발송 처리(sending queue)
             for (BrokerDTO b : brokerDTOList){
                 //최초발송 false처리
                 if(sendEmailProceessingDTO.getBrokerId() == b.getId()){
                     brokerResponseList.add(false);
+                    brokerSendingCount+=1;
                 }
                 else{
                     Boolean alternativeBrokerSuccess = true;
                     try{
                         log.info("대체발송 중계사: {}번-{}", b.getId(),emailBroker.get(b.getId()));
                         BrokerRequestLogDTO brokerRequestLogDTO = new BrokerRequestLogDTO(b.getId(), sendEmailProceessingDTO);
+                        brokerSendingCount+=1;
                         rabbitMQProducer.logSendQueue("broker[대체발송] request: "+ brokerRequestLogDTO.toString());
+                        log.info("broker[대체발송] request: "+ brokerRequestLogDTO.toString());
                         ResponseEntity<Long> response = sendBrokerApi(sendEmailProceessingDTO.getBrokerId(), sendEmailProceessingDTO.getBrokerEmailDTO());
                     }
                     catch (CustomException e){
-                        System.out.println(e);
                         log.info("*******************************************");
-                        System.out.println("ERROR : BROKER - " + e.getErrorCode());
+                        log.info("ERROR : BROKER - " + e.getErrorCode());
                         alternativeBrokerSuccess = false;
                         BrokerResponseLogDTO brokerResponseLogDTO = new BrokerResponseLogDTO(b.getId(), SendingStatus.FAIL, sendEmailProceessingDTO);
+                        if(brokerSendingCount==2){
+                            //끝 대체 발송 브로커
+                            brokerResponseLogDTO.setLast(true);
+                        }
                         if(e.getErrorCode() == ErrorCode.BAD_REQUEST){
                             brokerResponseLogDTO.setFailReason(FailReason.BAD_REQUEST);
                         }
                         rabbitMQProducer.logSendQueue("broker[대체발송] response log: "+ brokerResponseLogDTO.toString());
+                        log.info("broker[대체발송] response log: "+ brokerResponseLogDTO.toString());
                         log.info("*******************************************");
                     }
                     finally {
                         if(alternativeBrokerSuccess){
                             brokerResponseList.add(true);
                             BrokerResponseLogDTO brokerResponseLogDTO = new BrokerResponseLogDTO(b.getId(),SendingStatus.COMPLETE, sendEmailProceessingDTO);
+                            brokerResponseLogDTO.setLast(true);
                             rabbitMQProducer.logSendQueue("broker[대체발송] response log: "+ brokerResponseLogDTO.toString());
+                            log.info("broker[대체발송] response log: "+ brokerResponseLogDTO.toString());
                             break;
                         }
                         else{
